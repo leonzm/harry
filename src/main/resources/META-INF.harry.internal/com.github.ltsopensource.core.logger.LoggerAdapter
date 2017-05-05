@@ -1,0 +1,3 @@
+slf4j=com.github.harry.core.logger.slf4j.Slf4jLoggerAdapter
+log4j=com.github.harry.core.logger.log4j.Log4jLoggerAdapter
+jdk=com.github.harry.core.logger.jdk.JdkLoggerAdapter
