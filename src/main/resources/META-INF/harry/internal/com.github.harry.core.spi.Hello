@@ -1,0 +1,2 @@
+chinese=com.github.harry.core.spi.ChineseHello
+english=com.github.harry.core.spi.EnglishHello
