@@ -24,9 +24,9 @@ import java.util.concurrent.ConcurrentMap;
 public class ServiceLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLoader.class);
-    private static final String LTS_DIRECTORY = "META-INF/harry/";
-    private static final String LTS_INTERNAL = "internal";
-    private static final String LTS_INTERNAL_DIRECTORY = LTS_DIRECTORY + LTS_INTERNAL + "/";
+    private static final String HARRY_DIRECTORY = "META-INF/harry/";
+    private static final String HARRY_INTERNAL = "internal";
+    private static final String HARRY_INTERNAL_DIRECTORY = HARRY_DIRECTORY + HARRY_INTERNAL + "/";
     private static final String DEFAULT_IDENTITY = StringUtils.generateUUID();
 
     private static final ConcurrentMap<Class<?>, ServiceProvider> serviceMap = new ConcurrentHashMap<Class<?>, ServiceProvider>();
@@ -51,7 +51,7 @@ public class ServiceLoader {
             }
             ServiceDefinition definition = serviceProvider.nameMaps.get(name);
             if (definition == null) {
-                throw new IllegalStateException("Service loader could not load name:" + name + "  class:" + clazz.getName() + "'s ServiceProvider from '" + LTS_DIRECTORY + "' or '" + LTS_INTERNAL_DIRECTORY + "' It may be empty or does not exist.");
+                throw new IllegalStateException("Service loader could not load name:" + name + "  class:" + clazz.getName() + "'s ServiceProvider from '" + HARRY_DIRECTORY + "' or '" + HARRY_INTERNAL_DIRECTORY + "' It may be empty or does not exist.");
             }
 
             // 用来保证每个节点都是一个各自的对象
@@ -73,7 +73,7 @@ public class ServiceLoader {
                 return srv;
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Service loader could not load name:" + name + "  class:" + clazz.getName() + "'s ServiceProvider from '" + LTS_DIRECTORY + "' or '" + LTS_INTERNAL_DIRECTORY + "' It may be empty or does not exist.");
+            throw new IllegalStateException("Service loader could not load name:" + name + "  class:" + clazz.getName() + "'s ServiceProvider from '" + HARRY_DIRECTORY + "' or '" + HARRY_INTERNAL_DIRECTORY + "' It may be empty or does not exist.");
         }
     }
 
@@ -105,15 +105,15 @@ public class ServiceLoader {
 
         final Set<URLDefinition> urlDefinitions = new HashSet<URLDefinition>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        urlDefinitions.addAll(collectExtensionUrls(LTS_DIRECTORY + clazz.getName(), classLoader));
-        urlDefinitions.addAll(collectExtensionUrls(LTS_INTERNAL_DIRECTORY + clazz.getName(), classLoader));
+        urlDefinitions.addAll(collectExtensionUrls(HARRY_DIRECTORY + clazz.getName(), classLoader));
+        urlDefinitions.addAll(collectExtensionUrls(HARRY_INTERNAL_DIRECTORY + clazz.getName(), classLoader));
 
         final ConcurrentMap<String, ServiceDefinition> serviceDefinitions = new ConcurrentHashMap<String, ServiceDefinition>();
         for (URLDefinition urlDefinition : urlDefinitions) {
             serviceDefinitions.putAll(parse(urlDefinition));
         }
         if (serviceDefinitions.isEmpty()) {
-            throw new IllegalStateException("Service loader could not load " + clazz.getName() + "'s ServiceProvider from '" + LTS_DIRECTORY + "' or '" + LTS_INTERNAL_DIRECTORY + "' It may be empty or does not exist.");
+            throw new IllegalStateException("Service loader could not load " + clazz.getName() + "'s ServiceProvider from '" + HARRY_DIRECTORY + "' or '" + HARRY_INTERNAL_DIRECTORY + "' It may be empty or does not exist.");
         }
         ServiceProvider serviceProvider = new ServiceProvider(clazz, dynamicConfigKey, defaultName, serviceDefinitions);
         serviceMap.remove(clazz);   // 先移除
