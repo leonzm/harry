@@ -35,6 +35,7 @@
     <commons.email.version>1.4</commons.email.version>
     <commons.httpclient.version>3.1</commons.httpclient.version>
     <zookeeper.version>3.4.6</zookeeper.version>
+    <fastjson.version>1.2.7</fastjson.version>
   </properties>
 
   <dependencies>
@@ -251,6 +252,13 @@
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper</artifactId>
       <version>${zookeeper.version}</version>
+    </dependency>
+
+    <!-- fastjson -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>${fastjson.version}</version>
     </dependency>
 
   </dependencies>
