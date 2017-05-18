@@ -28,7 +28,7 @@ public class LoggerFactory {
 
     // 查找常用的日志框架
     static {
-        String logger = System.getProperty("harry.logger");
+        String logger = System.getProperty("harryjson.logger");
         if ("slf4j".equals(logger)) {
             setLoggerAdapter(new Slf4jLoggerAdapter());
         } else if ("log4j".equals(logger)) {

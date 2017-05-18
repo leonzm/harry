@@ -10,7 +10,7 @@ import java.io.File;
  * @Description: 日志输出器供给器
  * @Version: 1.0.0
  */
-@SPI(key = "harry.logger", dftValue = "slf4j")
+@SPI(key = "harryjson.logger", dftValue = "slf4j")
 public interface LoggerAdapter {
 
     /**
