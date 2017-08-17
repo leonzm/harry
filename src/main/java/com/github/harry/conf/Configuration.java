@@ -37,12 +37,16 @@ public class Configuration {
     public static final String environment = argsProperties.getProperty("harry.environment"); // 当前环境
     public static final String email_receiver = argsProperties.getProperty("harry.email.receiver"); // 邮件接受者
     public static final String http_port = argsProperties.getProperty("harry.port"); // http端口
+    public static final String zookeeper_address = argsProperties.getProperty("harry.zookeeper.address"); // zookeeper 地址
+    public static final String kafka_brokers = argsProperties.getProperty("harry.kafka.brokers"); // kafka brokers 地址
 
     /************************ 系统配置 ************************/
     public static final TimeZone TIMEZONE = TimeZone.getTimeZone("GMT+8");
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String IP = NetUtil.getLocalhostIp();
     public static Integer httpPort = Integer.parseInt(http_port);
+    public final static int ZK_SESSION_TIMEOUT = 5000; // zk 超时时间（单位：毫秒）
+    public static final String ROOT_NODE = "harry"; // 注册的根节点
 
     /**
      * 项目初始化

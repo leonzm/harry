@@ -37,6 +37,7 @@
     <zookeeper.version>3.4.6</zookeeper.version>
     <fastjson.version>1.2.7</fastjson.version>
     <javassist.version>3.20.0-GA</javassist.version>
+    <kafka.version>0.10.2.1</kafka.version>
   </properties>
 
   <dependencies>
@@ -267,6 +268,13 @@
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>${javassist.version}</version>
+    </dependency>
+
+    <!-- kafka -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka.version}</version>
     </dependency>
 
   </dependencies>
