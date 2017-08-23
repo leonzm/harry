@@ -58,5 +58,24 @@
 > ![各种I/O对比](doc/img/BioNioAio/io_model_contrast.png)
 
 ## lombok 笔记
+> 参考：[lombok注解介绍](http://blog.csdn.net/sunsfan/article/details/53542374)
+#### 一.简介
+> lombok 提供了简单的注解的形式来帮助我们简化消除一些必须有但显得很臃肿的 java 代码。
+
+#### 二.常用注解
+1. @Data：注解在类上；提供类所有属性的 getting 和 setting 方法，此外还提供了equals、canEqual、hashCode、toString 方法
+2. @Setter：注解在属性上；为属性提供 setting 方法
+3. @Getter：注解在属性上；为属性提供 getting 方法
+4. @Log4j：注解在类上；为类提供一个 属性名为 log 的 log4j 日志对象
+5. @NoArgsConstructor：注解在类上；为类提供一个无参的构造方法
+6. @RequiredArgsConstructor：注解在类上；使用类中所有带有@NonNull注解的或者带有final修饰的成员变量生成对应的构造方法
+7. @AllArgsConstructor：注解在类上；为类提供一个全参的构造方法
+8. @NonNull：注解在属性上（和 @Setter 上）或注解在参数上；非空检查，如果为空，抛出 NullPointerException
+9. @Cleanup：注解在变量上；保证此变量代表的资源会被自动关闭，默认是调用资源的close()方法（如果是其它方法，使用@Cleanup(“methodName”)来指定要调用的方法）
+10. @ToString：注解在类上；生成 toString 方法，可以使用 of、exclude 来指定变量和排除变量
+11. @EqualsAndHashCode：注解在类上；生成 equals 方法和 hashCode 方法，可以使用 of、exclude 来指定变量和排除变量
+12. @SneakyThrows：注解在方法上；将方法中的代码用try-catch语句包裹起来，捕获异常并在catch中用Lombok.sneakyThrow(e)把异常抛出，可以使用@SneakyThrows(Exception.class)的形式指定抛出哪种异常
+13. @Synchronized：注解在方法上；效果和synchronized关键字相同，区别在于锁对象不同，对于类方法和实例方法，synchronized关键字的锁对象分别是类的class对象和this对象，而@Synchronized得锁对象分别是私有静态final对象LOCK和私有final对象lock，当然，也可以自己指定锁对象
+14. @Log：注解在类上；为类提供一个 属性名为 log 的 util 日志对象
 
 
