@@ -55,7 +55,7 @@
 #### 二.实现源码：详细见study/io/aio
 
 ### 各种I/O对比
-> ![NIO模型](doc/img/BioNioAio/io_model_contrast.png)
+> ![各种I/O对比](doc/img/BioNioAio/io_model_contrast.png)
 
 ## lombok
 
