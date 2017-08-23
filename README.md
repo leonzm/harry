@@ -10,6 +10,13 @@
 > ![BIO通信模型](doc/img/BioNioAio/bio_model.png)
 #### 二.实现源码：详细见study/io/bio
 
+### 伪异步（优化后的BIO）
+#### 一.简介
+1. 在BIO的基础上，优化处理客户端的线程，使用线程池来管理这些线程，实现1个或多个线程处理N个客户端的模型（但是底层还是使用的同步阻塞I/O），通常被称为“伪异步I/O模型“。
+2.伪异步I/O模型图：
+> ![伪异步I/O模型](doc/img/BioNioAio/bio_model2.png)
+#### 二.实现源码：详细见study/io/bio2
+
 ### NIO
 
 ### AIO
