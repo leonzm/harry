@@ -86,7 +86,7 @@ System.out.println(intBuffer.get());
 1. capacity：一个内存块会有一个固定的大小
 2. position：写数据时，从一个确定位置（position）开始写入，最初 position 为0，每写一个单位，position 递增1；读数据时（调用了 filp()方法，写模式转换为读模式，position 自动被设置为0），每读取一个单位的数据，position 递增1
 3. limit：写模式时，limit 等于 capacity；读模式时，limit 等于写数据时的 position 。limit - position 表示此时还可以写入/读取多少单位的数据
-> ![buffer](doc/img/buffer/io_model_buffer.png)
+> ![buffer](doc/img/buffer/buffer.png)
 ```
 IntBuffer intBuffer = IntBuffer.allocate(10);
 intBuffer.put(10);
