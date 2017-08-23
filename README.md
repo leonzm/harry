@@ -57,6 +57,134 @@
 ### 各种I/O对比
 > ![各种I/O对比](doc/img/BioNioAio/io_model_contrast.png)
 
+
+## Buffer 笔记
+> 参考：JDK文档、[Java NIO 的前生今世 之三 NIO Buffer 详解](https://segmentfault.com/a/1190000006824155)
+#### 一.简介
+1. Buffer 其实就是一块内存区域, 我们可以在这个内存区域中进行数据的读写. NIO Buffer 其实是这样的内存块的一个封装, 并提供了一些操作方法让我们能够方便地进行数据的读写。
+2. Buffer 类型有：ByteBuffer, CharBuffer, DoubleBuffer, FloatBuffer, IntBuffer, LongBuffer, ShortBuffer。
+3. 多个当前线程使用缓冲区是不安全的。
+4. 标记、位置、限制和容量值遵守以下不变式：0 <= 标记 <= 位置 <= 限制 <= 容量 
+
+#### 二.基本使用
+1. 将数据写入到 Buffer 中
+2. 调用 Buffer.flip()方法, 将 NIO Buffer 转换为读模式
+3. 从 Buffer 中读取数据
+4. 调用 Buffer.clear() 或 Buffer.compact()方法, 将 Buffer 转换为写模式
+```
+IntBuffer intBuffer = IntBuffer.allocate(2);
+intBuffer.put(1234);
+intBuffer.put(5678);
+intBuffer.flip();
+System.out.println(intBuffer.get()); // 每当调用一次 get 方法读取数据时, buffer 的读指针都会向前移动一个单位长度(在这里是一个 int 长度)
+System.out.println(intBuffer.get());
+```
+
+#### 三.Buffer 属性
+> Buffer 有三个属性：capacity（容量）、position（位置）、limit（限制），其中 position 和 limit 的含义与 Buffer 处于读模式或写模式有关, 而 capacity 的含义与 Buffer 所处的模式无关。
+
+1. capacity：一个内存块会有一个固定的大小
+2. position：写数据时，从一个确定位置（position）开始写入，最初 position 为0，每写一个单位，position 递增1；读数据时（调用了 filp()方法，写模式转换为读模式，position 自动被设置为0），每读取一个单位的数据，position 递增1
+3. limit：写模式时，limit 等于 capacity；读模式时，limit 等于写数据时的 position 。limit - position 表示此时还可以写入/读取多少单位的数据
+> ![buffer](doc/img/buffer/io_model_buffer.png)
+```
+IntBuffer intBuffer = IntBuffer.allocate(10);
+intBuffer.put(10);
+intBuffer.put(101);
+System.out.println("Write mode: ");
+System.out.println("\tCapacity: " + intBuffer.capacity());
+System.out.println("\tPosition: " + intBuffer.position());
+System.out.println("\tLimit: " + intBuffer.limit());
+// 转换为写模式
+intBuffer.flip();
+System.out.println("Read mode: ");
+System.out.println("\tCapacity: " + intBuffer.capacity());
+System.out.println("\tPosition: " + intBuffer.position());
+System.out.println("\tLimit: " + intBuffer.limit());
+// 执行结果
+Write mode: 
+    Capacity: 10
+	Position: 2
+	Limit: 10
+Read mode: 
+	Capacity: 10
+	Position: 0
+	Limit: 2
+```
+
+#### 四.常用方法
+1. 分配 Buffer：每个类型的 Buffer 都有一个 allocate()方法, 可以通过这个方法分配 Buffer
+```
+ByteBuffer buf = ByteBuffer.allocate(48); // 分配了48 * sizeof(Byte)字节的内存空间
+CharBuffer buf2 = CharBuffer.allocate(1024); // 分配了1024 * sizeof(char) 即 1024*2 字节的内存空间，因为一个char占2字节
+```
+2. 写入数据到 Buffer
+```
+int bytesRead = inChannel.read(buf); // read into buffer.
+buf.put(127);
+```
+3. 从 Buffer 中读取数据
+```
+int bytesWritten = inChannel.write(buf); // read from buffer into channel.
+byte aByte = buf.get();
+```
+4. 重置 position，Buffer.rewind()方法可以重置 position 的值为0, 因此可以重新读取/写入 Buffer 了。如果是读模式, 则重置的是读模式的 position, 如果是写模式, 则重置的是写模式的 position
+```
+IntBuffer intBuffer = IntBuffer.allocate(2);
+intBuffer.put(1);
+intBuffer.put(2);
+System.out.println("position: " + intBuffer.position()); // 2
+intBuffer.rewind(); // 重置
+System.out.println("position: " + intBuffer.position()); // 0
+intBuffer.put(1);
+intBuffer.put(2);
+System.out.println("position: " + intBuffer.position()); // 2
+intBuffer.flip();// 将写模式切换为读模式
+System.out.println("position: " + intBuffer.position()); // 0
+intBuffer.get();
+intBuffer.get();
+System.out.println("position: " + intBuffer.position()); // 2
+intBuffer.rewind(); // 重置
+System.out.println("position: " + intBuffer.position()); // 0
+```
+5. mark()和 reset()：可以通过调用 Buffer.mark()将当前的 position 的值保存起来, 随后可以通过调用 Buffer.reset()方法将 position 的值回复回来
+```
+IntBuffer intBuffer = IntBuffer.allocate(2);
+intBuffer.put(1);
+intBuffer.put(2);
+intBuffer.flip();// 写模式切换为读模式
+System.out.println(intBuffer.get()); // 1
+System.out.println("position: " + intBuffer.position()); // 1
+intBuffer.mark(); // 标记
+System.out.println(intBuffer.get()); // 2
+System.out.println("position: " + intBuffer.position()); // 2
+intBuffer.reset(); // 重置到标记处
+System.out.println("position: " + intBuffer.position()); // 1
+System.out.println(intBuffer.get()); // 2
+```
+6. flip, rewind 和 clear 的区别：flip，当从写模式变为读模式时, 原先的 写 position 就变成了读模式的 limit；rewind, 即倒带, 这个方法仅仅是将 position 置为0；clear 将 positin 设置为0, 将 limit 设置为 capacity，
+```
+public final Buffer flip() {
+    limit = position;
+    position = 0;
+    mark = -1;
+    return this;
+}
+public final Buffer rewind() {
+    position = 0;
+    mark = -1;
+    return this;
+}
+public final Buffer clear() {
+    position = 0;
+    limit = capacity;
+    mark = -1;
+    return this;
+}
+```
+7. Buffer 的比较
+> 可以通过 equals() 或 compareTo() 方法比较两个 Buffer, 当且仅当如下条件满足时, 两个 Buffer 是相等的：(1)两个 Buffer 是相同类型的(2)两个 Buffer 的剩余的数据个数是相同的(3)两个 Buffer 的剩余的数据都是相同的。注意：比较两个 Buffer 时, 并不是 Buffer 中的每个元素都进行比较, 而是比较 Buffer 中剩余的元素。
+
 ## lombok 笔记
 > 参考：[lombok注解介绍](http://blog.csdn.net/sunsfan/article/details/53542374)
 #### 一.简介
