@@ -207,3 +207,39 @@ public final Buffer clear() {
 14. @Log：注解在类上；为类提供一个 属性名为 log 的 util 日志对象
 
 
+## AQS 笔记
+> 参考：
+[Java并发包源码学习之AQS框架（一）概述](http://www.cnblogs.com/zhanjindong/p/java-concurrent-package-aqs-overview.html)
+[java并发-独占锁与共享锁](http://blog.csdn.net/wojiushiwo945you/article/details/42292999)
+
+#### 一.简介
+> AQS 即 java.util.concurrent.locks.AbstractQueuedSynchronizer 类，它是 java.util.concurrent 的核心之一。
+如 ReentrantLock、Semaphore、CountDownLatch 都有一个内部类 Sync，而 Sync 就继承自 AbstractQueuedSynchronizer。
+
+#### 二.核心
+1. 通过一个**共享变量**来同步状态，变量的状态由**子类**去维护
+2. **共享变量**的**修改**都是通过**Unsafe类**提供的**CAS操作**完成的
+3. AQS 负责：(1)**线程阻塞队列**的维护；(2)线程的**阻塞**和**唤醒**（自旋和睡眠/唤醒）
+4. AbstractQueuedSynchronizer类的主要方法是**acquire**和**release**，典型的**模板方法**， 下面这4个方法由**子类实现**：
+```
+ protected boolean tryAcquire(int arg) // 尝试获得独占锁（排它锁）
+ protected boolean tryRelease(int arg) // 尝试是否独占锁（排它锁）
+ protected int tryAcquireShared(int arg) // 尝试获得共享锁
+ protected boolean tryReleaseShared(int arg) // 尝试释放共享锁
+```
+> acquire方法用来**获取锁**，返回true说明线程获取成功继续执行，一旦返回false则线程加入到等待队列中，等待被唤醒，release方法用来**释放锁**。 
+一般来说实现的时候这两个方法被封装为lock和unlock方法，如：study.aqs.SimpleLock
+
+#### 三.线程阻塞队列
+1. AbstractQueuedSynchronizer 是通过一个内部类Node来实现CLH lock queue的一个变种
+2. CLH lock queue其实就是一个**FIFO的队列**，队列中的**每个结点（线程）只要等待其前继释放锁就可以了**，如：study.aqs.ClhSpinLock
+
+> ClhSpinLock的Node类实现很简单只有一个布尔值，AbstractQueuedSynchronizer$Node的实现稍微复杂点。大概：
+
+> ![clh](doc/img/aqs/aqs_clh.jpg)
+
+> head（头指针）、tail（尾指针）、prev（指向前继的指针）、next（图中没有画出来，它跟prev相反，指向后继），
+关键不同就是next指针，这是因为AQS中线程不是一直在自旋的，而可能会反复的睡眠和唤醒，这就需要前继释放锁的时候通过next 指针找到其后继将其唤醒，
+也就是AQS的等待队列中后继是被前继唤醒的。AQS结合了自旋和睡眠/唤醒两种方法的优点。
+
+
