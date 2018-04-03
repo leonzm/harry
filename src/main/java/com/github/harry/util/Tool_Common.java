@@ -1,9 +1,11 @@
 package com.github.harry.util;
 
+import com.google.common.base.Strings;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.MappedByteBuffer;
@@ -21,6 +23,9 @@ import java.util.regex.Pattern;
  * @Version: 1.0.0
  */
 public class Tool_Common {
+
+    private static BASE64Encoder base64Encoder = new BASE64Encoder();
+    private static BASE64Decoder base64Decoder = new BASE64Decoder();
 
     /**
      * 获取32位的uuid
@@ -149,7 +154,7 @@ public class Tool_Common {
      * @param map
      * @return
      */
-    public static List<Map.Entry<?, Double>> sort_map_bydouble(Map<?, Double> map) {
+    public static List<Map.Entry<?, Double>> sort_map_by_double(Map<?, Double> map) {
         List<Map.Entry<?, Double>> list = new ArrayList<Map.Entry<?, Double>>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<?, Double>>() {
             @Override
@@ -245,6 +250,73 @@ public class Tool_Common {
             BigInteger bi = new BigInteger(1, md5.digest());
             return bi.toString(16);
         }
+    }
+
+    /**
+     * 字节数组转 Base64
+     * @param bytes
+     * @return
+     */
+    public static String bytes_to_base64(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        return base64Encoder.encode(bytes);
+    }
+
+    /**
+     * Base64 转字节数组
+     * @param base64
+     * @return
+     * @throws IOException
+     */
+    public static byte[] base64_to_bytes(String base64) throws IOException {
+        if (Strings.isNullOrEmpty(base64)) {
+            return null;
+        }
+        return base64Decoder.decodeBuffer(base64);
+    }
+
+    /**
+     * 文件转 Base64
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static String file_to_base64(File file) throws IOException {
+        if (file == null || file.isDirectory() || !file.exists()) {
+            return null;
+        }
+        InputStream inputStream = new FileInputStream(file);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        inputStream.close();
+        return bytes_to_base64(bytes);
+    }
+
+    /**
+     * Base64 转文件
+     * @param base64
+     * @param filePath
+     * @throws IOException
+     */
+    public static void base64_to_file(String base64, String filePath) throws IOException {
+        if (Strings.isNullOrEmpty(base64) || Strings.isNullOrEmpty(filePath)) {
+            return;
+        }
+        byte[] bytes = base64_to_bytes(base64);
+        OutputStream outputStream = new FileOutputStream(filePath);
+        outputStream.write(bytes);
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    public static void main(String[] args) throws Exception{
+        // 文件转 Base64
+        String base64 = file_to_base64(new File("D:/test.jpg"));
+        System.out.println(base64);
+        // Base64 转文件
+        base64_to_file(base64, "D:/test2.jpg");
     }
 
 }
